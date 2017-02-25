@@ -10,7 +10,7 @@ services:
     tty: true
     stdin_open: true
     volumes:
-    - db:/var/lib/mysql
+    - registry-db:/var/lib/mysql
     labels:
       registry.portus.db: 1
   sslproxy:
@@ -20,12 +20,12 @@ services:
     links:
     - portus:portus
     volumes:
-    - certs:/etc/nginx/certs:ro
-    - proxy:/etc/nginx/conf.d:ro
+    - registry-certs:/etc/nginx/certs:ro
+    - registry-proxy:/etc/nginx/conf.d:ro
     labels:
       io.rancher.scheduler.affinity:container_label_soft: registry.portus.db=1
   registry:
-    image: registry:2.3.1
+    image: registry:2.4.0
     environment:
       REGISTRY_LOG_LEVEL: warn
       REGISTRY_STORAGE_DELETE_ENABLED: true
@@ -48,8 +48,8 @@ services:
     links:
     - portus:portus
     volumes:
-    - certs:/certs
-    - registry:/var/lib/registry
+    - registry-certs:/certs
+    - registry-data:/var/lib/registry
   lb:
     image: rancher/load-balancer-service
     tty: true
@@ -67,9 +67,12 @@ services:
     - registry:registry
     - sslproxy:sslproxy
   portus:
-    image: sshipway/portus:2.0.5
+    image: antonyordanov/portus:2.2
     environment:
-      PORTUS_MACHINE_FQDN: ${DOMAIN}
+      PORTUS_MACHINE_FQDN_VALUE: ${DOMAIN}
+      PORTUS_PUMA_HOST: "portus:3000"
+      PORTUS_PUMA_WORKERS: 1
+      PORTUS_PUMA_MAX_THREADS: 1
       PORTUS_PRODUCTION_HOST: db
       PORTUS_PRODUCTION_DATABASE: portus
       PORTUS_PRODUCTION_USERNAME: portus
@@ -99,20 +102,11 @@ services:
     tty: true
     stdin_open: true
     volumes:
-    - certs:/certs
-    - proxy:/etc/nginx/conf.d
+    - registry-certs:/certs
+    - registry-proxy:/etc/nginx/conf.d
     links:
     - db:db
     labels:
       io.rancher.container.pull_image: always
       io.rancher.scheduler.affinity:container_label_soft: registry.portus.db=1
       registry.portus.app: 1
-volumes:
-  registry:
-    driver: rancher-nfs
-  certs:
-    driver: rancher-nfs
-  db:
-    driver: rancher-nfs
-  proxy:
-    driver: rancher-nfs
