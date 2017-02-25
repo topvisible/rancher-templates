@@ -1,0 +1,13 @@
+version: 2
+services:
+  tor-proxy:
+    image: registry.ranktrail.se:5000/tor-proxy
+    ports:
+    - 5566:5566
+    - 2090:2090
+    tty: true
+    stdin_open: true
+    env_file:
+    - .env.rancher
+    labels:
+      io.rancher.container.pull_image: always

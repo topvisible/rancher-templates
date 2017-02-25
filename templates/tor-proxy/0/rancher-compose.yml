@@ -1,0 +1,27 @@
+.catalog:
+  name: "TOR Proxy"
+  version: "v1.0"
+  description: "Ranktrail TOR Proxy"
+  uuid: tor-proxy1
+  questions:
+    - variable: "tors"
+      label: "TOR instances"
+      description: "Number of TOR instances"
+      default: 100
+      required: true
+      type: "int"
+    - variable: "login"
+      label: "User"
+      description: "TOR Proxy User Name"
+      required: true
+      type: "string"
+    - variable: "password"
+      label: "Password"
+      required: true
+      default: password
+      type: "password"
+
+version: '2'
+services:
+  tor-proxy:
+    scale: 1
