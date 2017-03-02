@@ -1,4 +1,18 @@
 version: '2'
+volumes:
+  registry-proxy-storage:
+    external: true
+    driver: rancher-nfs
+  registry-images-storage:
+    external: true
+    driver: rancher-nfs
+  registry-database-storage:
+    external: true
+    driver: rancher-nfs
+  registry-certs-storage:
+    external: true
+    driver: rancher-nfs
+
 services:
   db:
     image: mysql:5.7.10
@@ -10,7 +24,7 @@ services:
     tty: true
     stdin_open: true
     volumes:
-    - registry-db:/var/lib/mysql
+    - registry-database-storage:/var/lib/mysql
     labels:
       registry.portus.db: 1
   sslproxy:
@@ -20,8 +34,8 @@ services:
     links:
     - portus:portus
     volumes:
-    - registry-certs:/etc/nginx/certs:ro
-    - registry-proxy:/etc/nginx/conf.d:ro
+    - registry-certs-storage:/etc/nginx/certs:ro
+    - registry-proxy-storage:/etc/nginx/conf.d:ro
     labels:
       io.rancher.scheduler.affinity:container_label_soft: registry.portus.db=1
   registry:
@@ -48,8 +62,8 @@ services:
     links:
     - portus:portus
     volumes:
-    - registry-certs:/certs
-    - registry-data:/var/lib/registry
+    - registry-certs-storage:/certs
+    - registry-images-storage:/var/lib/registry
   lb:
     image: rancher/load-balancer-service
     tty: true
@@ -102,8 +116,8 @@ services:
     tty: true
     stdin_open: true
     volumes:
-    - registry-certs:/certs
-    - registry-proxy:/etc/nginx/conf.d
+    - registry-certs-storage:/certs
+    - registry-proxy-storage:/etc/nginx/conf.d
     links:
     - db:db
     labels:
