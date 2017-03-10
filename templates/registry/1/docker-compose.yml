@@ -27,6 +27,7 @@ services:
     - registry-database-storage:/var/lib/mysql
     labels:
       registry.portus.db: 1
+
   sslproxy:
     image: nginx:1.9.9
     tty: true
@@ -38,6 +39,7 @@ services:
     - registry-proxy-storage:/etc/nginx/conf.d:ro
     labels:
       io.rancher.scheduler.affinity:container_label_soft: registry.portus.db=1
+
   registry:
     image: registry:2.4.0
     environment:
@@ -64,6 +66,7 @@ services:
     volumes:
     - registry-certs-storage:/certs
     - registry-images-storage:/var/lib/registry
+
   lb:
     image: rancher/load-balancer-service
     tty: true
@@ -113,9 +116,10 @@ services:
       REGISTRY_HOSTNAME: ${DOMAIN}
       REGISTRY_PORT: ${RPORT}
       REGISTRY_NAME: Registry
-      RAILS_ENV=production
+      RAILS_ENV: production
     tty: true
     stdin_open: true
+    command: ./startup.sh
     volumes:
     - registry-certs-storage:/certs
     - registry-proxy-storage:/etc/nginx/conf.d
