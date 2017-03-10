@@ -14,6 +14,7 @@
       label: "User"
       description: "TOR Proxy User Name"
       required: true
+      default: proxy_usr
       type: "string"
     - variable: "password"
       label: "Password"
