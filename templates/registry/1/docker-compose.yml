@@ -113,6 +113,7 @@ services:
       REGISTRY_HOSTNAME: ${DOMAIN}
       REGISTRY_PORT: ${RPORT}
       REGISTRY_NAME: Registry
+      RAILS_ENV=production
     tty: true
     stdin_open: true
     volumes:
