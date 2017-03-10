@@ -1,0 +1,24 @@
+version: '2'
+services:
+  postgres-data:
+    image: busybox
+    volumes:
+    - /var/lib/data/postgres:/var/lib/postgresql/data/pgdata
+    labels:
+      io.rancher.container.start_once: 'true'
+  postgres:
+    image: postgres:latest
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: cObl9kaP6xqe97
+      POSTGRES_USER: postgres
+    stdin_open: true
+    tty: true
+    volumes_from:
+    - postgres-data
+    ports:
+    - 5432:5432/tcp
+    labels:
+      io.rancher.scheduler.affinity:host_label: host_name=docker4
+      io.rancher.sidekicks: postgres-data
