@@ -14,21 +14,17 @@
     - variable: postgres_db
       description: "Postgres Database"
       label: "Postgres Database"
-      required: true
-      default: "postgres_sb"
       type: "string"
     - variable: postgres_user
       description: "Postgres User"
       label: "Postgres User"
-      required: true
-      default: "postgres_user"
       type: "string"
     - variable: postgres_password
       description: "Postgres Password"
       label: "Postgres Password"
       required: true
       default: "postgres_password"
-      type: "string"
+      type: "password"
 
 version: '2'
 services:
@@ -49,3 +45,9 @@ services:
       response_timeout: 2000
   postgres:
     scale: 1
+    health_check:
+      port: 5432
+      interval: 2000
+      unhealthy_threshold: 3
+      healthy_threshold: 2
+      response_timeout: 2000
