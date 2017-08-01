@@ -1,0 +1,33 @@
+version: '2'
+volumes:
+  rt-wordpress-code:
+    external: true
+    driver: 'null'
+  rt-wordpress-html:
+    external: true
+    driver: 'null'
+services:
+  wordpress:
+    image: wordpress:latest
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: {WORDPRESS_DB_NAME}
+      WORDPRESS_DB_PASSWORD: {WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_USER: {WORDPRESS_DB_USER}
+    stdin_open: true
+    external_links:
+    - rt-mysql-server/mysql-server:db
+    volumes:
+    - rt-wordpress-code:/code
+    - rt-wordpress-html:/var/www/html
+    tty: true
+    labels:
+      io.rancher.container.hostname_override: container_name
+  wordpress-lb:
+    image: rancher/lb-service-haproxy:v0.5.9
+    ports:
+    - 8002:8002/tcp
+    labels:
+      io.rancher.container.agent.role: environmentAdmin
+      io.rancher.container.create_agent: 'true'
+      io.rancher.scheduler.global: 'true'
